@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import TextFieldGroup from '../common/TextFieldGroup';
 import validateInput from '../../shared/validations/login.js';
 import { connect } from 'react-redux';
-import { login } from '../../actions/loginAction';
+import { login } from '../../actions/authActions';
 import PropTypes from 'prop-types';
-import { Redirect } from 'react-router-dom'
+import {withRouter} from "react-router-dom";
 
 
 
@@ -16,8 +16,7 @@ class LoginForm extends Component {
             email: '',
             password: '',
             errors: {},
-            isLoading: false,
-            redirect: false
+            isLoading: false
         };
         this.onSubmit = this.onSubmit.bind(this);
         this.onChange = this.onChange.bind(this);
@@ -36,8 +35,10 @@ class LoginForm extends Component {
             this.setState({ errors: {}, isLoading: true});
             
             this.props.login(this.state).then(
-                (res) => {console.log(res);this.setState({redirect: true})},
-                (err) => this.setState({errors: err.data.errors, isLoading: false}),
+                (res) => {
+                    this.props.history.push("/");
+                },
+                (error) => {this.setState({ errors: error.response.data})},
             );
         } 
     }
@@ -45,14 +46,12 @@ class LoginForm extends Component {
         this.setState({ [e.target.name]: e.target.value});
     }
     render () {
-        const { errors, email, password, isLoading, redirect } = this.state;
-
-        if (redirect) {return <Redirect to='/'/>;}
+        const { errors, email, password, isLoading } = this.state;
 
         return (
             <form onSubmit={this.onSubmit} >
                 <h2>Login</h2>
-
+                {errors.invalid && <div className="alert alert-danger"> <span>{errors.invalid}</span> </div>}
                 <TextFieldGroup
                 field='email'
                 label='Username / Email'
@@ -81,4 +80,4 @@ LoginForm.propTypes = {
     login: PropTypes.func.isRequired
 }
 
-export default connect(null, { login })(LoginForm);
+export default withRouter(connect(null, { login })(LoginForm));

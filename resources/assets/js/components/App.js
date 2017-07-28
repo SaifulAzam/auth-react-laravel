@@ -9,12 +9,12 @@ import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
 import { createStore, applyMiddleware, compose } from 'redux';
 import rootReducer from './rootReducer';
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch
-} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import LoginPage from '../components/login/LoginPage.js';
+import setAuthToken from '../shared/utils/setAuthToken';
+import { setCurrentUser } from '../actions/authActions';
+import axios from 'axios';
+
 
 const store = createStore(
   rootReducer,
@@ -23,6 +23,13 @@ const store = createStore(
     window.devToolsExtension ? window.devToolsExtension() : f => f
   )
 )
+
+if (localStorage.jwtToken) {
+    setAuthToken(localStorage.jwtToken);
+    axios.get('api/decode').then((data) => {
+        store.dispatch(setCurrentUser(data.data));
+    });
+}
 
 class App extends Component {
     render() {

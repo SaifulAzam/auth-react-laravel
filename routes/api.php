@@ -24,3 +24,4 @@ Route::get('/users/{user}/profile', 'UserController@user');
 Route::post('/register', 'RegisterController@store');
 
 Route::post('/login', 'LoginController@auth');
+Route::get('/decode', 'LoginController@decode');

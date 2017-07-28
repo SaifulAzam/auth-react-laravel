@@ -5,21 +5,39 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\Hash;
+use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTFactory;
 
 class LoginController extends Controller
 {
+    use AuthenticatesUsers;
     public function auth(Request $request){
    
-         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) 
-        {
-            // Authentication passed...
-            info("correct");
-        }
-        else
-        {
-            info("login data incorrect!");
+ // grab credentials from the request
+        $credentials = $request->only('email', 'password');
+        
 
+        try {
+            // attempt to verify the credentials and create a token for the user
+            if (! $token = JWTAuth::attempt($credentials)) {
+                return response()->json(['error' => 'invalid_credentials'], 401);
+            }
+        } catch (JWTException $e) {
+            // something went wrong whilst attempting to encode the token
+            return response()->json(['error' => 'could_not_create_token'], 500);
         }
+
+        // all good so return the token
+
+        return response()->json(compact('token'));
     }
+
+    public function decode() {
+        return  JWTAuth::parseToken()->authenticate();
+    }
+    
 }
 

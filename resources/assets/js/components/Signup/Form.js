@@ -4,10 +4,10 @@ import axios from 'axios';
 import propTypes from 'prop-types';
 import classnames from 'classnames';
 import TextFieldGroup from '../common/TextFieldGroup';
-import { Redirect } from 'react-router-dom'
+import { withRouter } from "react-router-dom";
 
 
-export default class Form extends Component{
+class Form extends Component{
     constructor(props){
         super(props);
         this.state = {
@@ -17,8 +17,7 @@ export default class Form extends Component{
             password_confirmation:'',
             timezone:'',
             errors: '',
-            isLoading: false,
-            redirect: false
+            isLoading: false
         }
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
@@ -38,7 +37,7 @@ export default class Form extends Component{
                 text: 'you have signed up!'
             });
             if(response.status == 200){
-                this.setState({redirect: true});
+                this.props.history.push("/");
             }
         });
         
@@ -47,11 +46,8 @@ export default class Form extends Component{
         const options = Object.keys(timezone).map(function(val){
                 return (<option key={timezone[val]} value={timezone[val]}>{val}</option>)
          })
-        const { errors, redirect } = this.state;
+        const { errors } = this.state;
 
-        if (redirect) {
-        return <Redirect to='/'/>;
-        }
         return (
             <div className="">
                 <form action=""  onSubmit={this.onSubmit}>
@@ -115,3 +111,5 @@ Form.propTypes = {
     userSignupRequest: React.PropTypes.func.isRequired,
     addFlashMessage: React.PropTypes.func.isRequired
 }
+
+export default withRouter(Form);
