@@ -26,3 +26,11 @@ export function login(data){
         });
     };
 };
+
+export function logout(data){
+    return (dispatch) => {
+        localStorage.removeItem('jwtToken');
+        setAuthToken(false);
+        dispatch(setCurrentUser({}));
+    };
+}

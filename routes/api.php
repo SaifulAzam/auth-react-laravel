@@ -25,3 +25,5 @@ Route::post('/register', 'RegisterController@store');
 
 Route::post('/login', 'LoginController@auth');
 Route::get('/decode', 'LoginController@decode');
+
+Route::post('/new-event', 'EventController@create')->middleware('jwt.auth');
